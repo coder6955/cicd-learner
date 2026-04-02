@@ -33,3 +33,39 @@ jobs:
         with:
           name: my-artifacts
           path: demo/target/surefire-reports
+
+  docker-build-and-push:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        env:
+          JAVA_VERSION: 21 #IN prod put in github secrets
+        with:
+          distribution: 'temurin'
+          java-version: '${{ env.JAVA_VERSION }}'
+
+      - name: Build with JAR + verify (run tests)
+        run: mvn clean package -DskipTests
+        working-directory: demo
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} #udayp6955
+          password: ${{ secrets.DOCKER_PASSWORD }} #docker6955
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: demo
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/myspringbootapp:latest
+            ${{ secrets.DOCKER_USERNAME }}/myspringbootapp:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/myspringbootapp:${{ github.ref_name }}
