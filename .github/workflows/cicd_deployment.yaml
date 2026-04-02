@@ -3,6 +3,10 @@ name: APP_PROD_DEPLOYMENT
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'demo/**'
+#      - '.github/workflows/cicd_deployment.yaml'
+#      - 'k8s/actual_deployment/**'
   workflow_dispatch:
 
 jobs:
