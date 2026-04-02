@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-chi-deployment
+  labels:
+    app: majha-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: majha-app
+  template:
+    metadata:
+      labels:
+        app: majha-app
+    spec:
+      containers:
+      - name: app-cha-container
+        image: udayp6955/myspringbootapp:latest
+        env:
+#        - name: ENVIRONMENT
+#          value: "production"
+#        - name: LOG_LEVEL
+#          value: "info"
+          - name: ENVIRONMENT
+            valueFrom:
+                configMapKeyRef:
+                  name: app-cha-config
+                  key: APP_ENV
+          - name: LOG_LEVEL
+            valueFrom:
+                configMapKeyRef:
+                  name: app-cha-config
+                  key: LOG_LEVEL
+          - name: DB_USERNAME
+            valueFrom:
+                secretKeyRef:
+                  name: app-cha-secret
+                  key: DB_USERNAME
+          - name: DB_PASSWORD
+            valueFrom:
+                secretKeyRef:
+                  name: app-cha-secret
+                  key: DB_PASSWORD
+          - name: SECRET_KEY
+            valueFrom:
+                secretKeyRef:
+                  name: app-cha-secret
+                  key: SECRET_KEY
+        ports:
+        - containerPort: 8080
+
+#      it is 8080 beacuse springboot app by default listens on port 80 and we are exposing that port in the service
+#      as well, targetport and nodeport are for routing the traffic to the correct port on the container and
+#      the node respectively.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service-majhi
+spec:
+  selector:
+    app: majha-app
+  ports:
+  - protocol: TCP
+    port: 8182
+    targetPort: 8080
+    nodePort: 30080
+  type: NodePort
