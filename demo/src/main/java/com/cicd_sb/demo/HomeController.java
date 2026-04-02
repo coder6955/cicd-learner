@@ -20,7 +20,8 @@ public class HomeController {
                 "message", "Hello World from uday V2!",
                 "environment", env,
                 "logLevel", LOG_LEVEL,
-                "host", host
+                "host", host,
+                "Kubernetes","Is added bruhhh finally!!!"
         );
     }
 }

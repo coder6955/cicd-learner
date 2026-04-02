@@ -73,3 +73,22 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/myspringbootapp:latest
             ${{ secrets.DOCKER_USERNAME }}/myspringbootapp:${{ github.sha }}
             ${{ secrets.DOCKER_USERNAME }}/myspringbootapp:${{ github.ref_name }}
+
+  deploy-to-kubernetes:
+    needs: docker-build-and-push
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/via_git_actions_deployment/secret.yaml
+          kubectl apply -f k8s/via_git_actions_deployment/config.yaml
+          kubectl apply -f k8s/via_git_actions_deployment/deployment-service.yaml
