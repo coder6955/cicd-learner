@@ -17,7 +17,7 @@ public class HomeController {
         String DB_USERNAME = System.getenv().getOrDefault("DB_USERNAME", "NO VALUE PRESENT");
         //return "Hello World from uday V2!";
         return Map.of(
-                "message", "Hello World from uday V3!",
+                "message", "Hello World from uday V3 again!",
                 "environment", env,
                 "logLevel", LOG_LEVEL,
                 "host", host,
